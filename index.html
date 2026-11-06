@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>نظام إجازات قسم الفحص - النساجون الشرقيون</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--text:#1b2a3a;--muted:#6b7a8c;--pri:#1d4e89;--pri2:#2e7bd6;--ok:#1e8e5a;--bad:#c0392b;--warn:#d98e04;--line:#dde4ee;--head:linear-gradient(135deg,#1d4e89,#2e7bd6)}
+:root[data-theme=dark]{--bg:#0f1620;--card:#18222f;--text:#e6edf5;--muted:#8fa0b3;--pri:#4da3ff;--pri2:#2e7bd6;--line:#2a3a4d;--head:linear-gradient(135deg,#0b2545,#13315c)}
+:root[data-theme=green]{--bg:#f2f8f4;--pri:#1e7a4c;--pri2:#2fa86b;--line:#d5e6db;--head:linear-gradient(135deg,#14573a,#2fa86b)}
+:root[data-theme=gold]{--bg:#faf6ee;--pri:#8a5a00;--pri2:#c98a0b;--line:#eadfc6;--head:linear-gradient(135deg,#5c3b00,#c98a0b)}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font-family:Tahoma,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+header{background:var(--head);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header svg{flex:none}
+header h1{margin:0;font-size:1.05rem;flex:1;min-width:200px}
+header small{display:block;font-weight:400;opacity:.85}
+select,input,button,textarea{font:inherit}
+.themes select{padding:6px 8px;border-radius:8px;border:0}
+main{max-width:980px;margin:0 auto;padding:14px}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tabs button{flex:1;padding:10px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;cursor:pointer}
+.tabs button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+h2{margin:0 0 10px;font-size:1.05rem;color:var(--pri)}
+label{display:block;font-size:.85rem;color:var(--muted);margin:8px 0 3px}
+input,select,textarea{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--text)}
+.btn{background:var(--pri);color:#fff;border:0;padding:9px 16px;border-radius:8px;cursor:pointer;margin-top:10px}
+.btn.ok{background:var(--ok)}.btn.bad{background:var(--bad)}.btn.sm{padding:4px 10px;margin:0;font-size:.8rem}.btn.gray{background:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{background:var(--bg);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.5rem;color:var(--pri)}.stat span{font-size:.78rem;color:var(--muted)}
+.stat.sick b{color:var(--warn)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:560px}
+th,td{padding:7px;border-bottom:1px solid var(--line);text-align:right}
+th{color:var(--muted);font-weight:600}
+.tag{padding:2px 8px;border-radius:20px;font-size:.75rem;color:#fff}
+.pending{background:var(--warn)}.approved{background:var(--ok)}.rejected{background:var(--bad)}
+.msg{padding:8px;border-radius:8px;margin-top:8px;font-size:.85rem}.msg.e{background:#fdecea;color:var(--bad)}.msg.s{background:#e6f6ee;color:var(--ok)}
+.hide{display:none}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--pri2)}
+</style>
+</head>
+<body>
+<header>
+<svg width="52" height="52" viewBox="0 0 52 52" aria-label="شعار"><circle cx="26" cy="26" r="25" fill="#fff"/><path d="M10 18h32M10 26h32M10 34h32M18 10v32M26 10v32M34 10v32" stroke="#1d4e89" stroke-width="3" stroke-linecap="round"/><circle cx="26" cy="26" r="6" fill="#c98a0b"/></svg>
+<h1>شركة النساجون الشرقيون - انترناشيونال | قسم الفحص<small>نظام إدارة إجازات العمال</small></h1>
+<div class="themes"><select id="theme" aria-label="التصميم"><option value="light">🎨 فاتح</option><option value="dark">🌙 داكن</option><option value="green">🌿 أخضر</option><option value="gold">✨ ذهبي</option></select></div>
+</header>
+<main>
+<div class="tabs"><button id="tE" class="on">بوابة الموظف</button><button id="tA">لوحة الإدارة</button></div>
+
+<section id="emp">
+<div id="eLogin" class="card"><h2>دخول الموظف</h2><label>الكود الشخصي</label><input id="code" inputmode="numeric" placeholder="مثال: 101"><button class="btn" id="eGo">دخول</button><div id="eMsg"></div></div>
+<div id="eDash" class="hide">
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="eName"></h2><button class="btn sm gray" id="eOut">خروج</button></div>
+<div class="grid" id="eStats"></div><div class="bar"><i id="eBar"></i></div></div>
+<div class="card"><h2>طلب إجازة جديد</h2>
+<label>نوع الإجازة</label><select id="type"><option value="annual">سنوية</option><option value="casual">عارضة (تخصم من السنوي)</option><option value="half">نصف يوم (0.5 من السنوي)</option><option value="sick">مرضية (لا تخصم من السنوي)</option></select>
+<div class="row2"><div><label id="lFrom">من تاريخ</label><input type="date" id="from"></div><div id="toBox"><label>إلى تاريخ</label><input type="date" id="to"></div></div>
+<label>ملاحظات</label><textarea id="note" rows="2"></textarea><button class="btn" id="send">إرسال الطلب</button><div id="rMsg"></div></div>
+<div class="card"><h2>سجل إجازاتي</h2><div class="wrap"><table id="eTbl"></table></div></div>
+</div>
+</section>
+
+<section id="adm" class="hide">
+<div id="aLogin" class="card"><h2>دخول الإدارة</h2><label>كلمة المرور</label><input type="password" id="pw"><button class="btn" id="aGo">دخول</button><div id="aMsg"></div></div>
+<div id="aDash" class="hide">
+<div class="card"><div class="grid" id="aStats"></div></div>
+<div class="card"><h2>الطلبات</h2><div class="wrap"><table id="aReq"></table></div></div>
+<div class="card"><h2>الموظفون وأرصدتهم</h2><div class="wrap"><table id="aEmp"></table></div>
+<h2 style="margin-top:14px">إضافة موظف</h2><div class="row2"><div><label>الكود</label><input id="nc"></div><div><label>الاسم</label><input id="nn"></div></div>
+<label>الرصيد السنوي</label><select id="nb"><option value="28">28 يوم</option><option value="37">37 يوم</option></select><button class="btn" id="add">إضافة</button><div id="nMsg"></div>
+<button class="btn bad sm" id="aOut" style="margin-top:14px">خروج</button></div>
+</div>
+</section>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TYPES={annual:'سنوية',casual:'عارضة',half:'نصف يوم',sick:'مرضية'};
+const ST={pending:'قيد الانتظار',approved:'مقبول',rejected:'مرفوض'};
+// ====== ضع بيانات مشروع Firebase هنا ======
+const firebaseConfig={apiKey:"AIzaSyAsXSXrx08zmhj0WMm7E6lH0o0hvomCJjY",authDomain:"oriental-weavers-a0801.firebaseapp.com",projectId:"oriental-weavers-a0801",storageBucket:"oriental-weavers-a0801.firebasestorage.app",messagingSenderId:"854054403216",appId:"1:854054403216:web:233c21f340893d0218ec15"};
+// ==========================================
+const ADMIN_PW='19122001';
+let DB={emps:[],reqs:[]},fdb=null;
+if(firebaseConfig.apiKey.startsWith('ضع'))document.querySelector('main').insertAdjacentHTML('afterbegin','<div class="msg e">لم يتم ربط قاعدة البيانات بعد (راجع بيانات Firebase في أعلى الكود)</div>');
+else try{firebase.initializeApp(firebaseConfig);fdb=firebase.firestore();
+fdb.collection('emps').onSnapshot(q=>{DB.emps=q.docs.map(d=>d.data());refresh()},()=>alert('تعذر الاتصال بقاعدة البيانات'));
+fdb.collection('reqs').onSnapshot(q=>{DB.reqs=q.docs.map(d=>d.data()).sort((a,b)=>a.id-b.id);refresh()})}catch(e){}
+function refresh(){if(cur&&!$('eDash').classList.contains('hide')){if(!DB.emps.find(x=>x.code===cur)){$('eOut').click();return}renderE()}if(!$('aDash').classList.contains('hide'))renderA()}
+// الحسابات: الخصم يُحسب دائماً من الطلبات المقبولة فقط
+function stats(code){const e=DB.emps.find(x=>x.code===code);const ok=DB.reqs.filter(r=>r.code===code&&r.status==='approved');
+const sum=t=>ok.filter(r=>r.type===t).reduce((a,r)=>a+r.days,0);
+const annual=sum('annual'),casual=sum('casual'),half=sum('half'),sick=sum('sick');
+const used=annual+casual+half;return{e,annual,casual,half,sick,used,left:e.bal-used}}
+function days(a,b){return Math.round((new Date(b)-new Date(a))/864e5)+1}
+function msg(id,t,c){$(id).innerHTML='<div class="msg '+c+'">'+esc(t)+'</div>'}
+// الثيم
+const th=(()=>{try{return localStorage.getItem('nasajoon_theme')}catch(e){return null}})()||'light';
+$('theme').value=th;document.documentElement.dataset.theme=th;
+$('theme').onchange=e=>{document.documentElement.dataset.theme=e.target.value;try{localStorage.setItem('nasajoon_theme',e.target.value)}catch(x){}};
+// تبويبات
+function tab(a){$('emp').classList.toggle('hide',a);$('adm').classList.toggle('hide',!a);$('tE').classList.toggle('on',!a);$('tA').classList.toggle('on',a)}
+$('tE').onclick=()=>tab(false);$('tA').onclick=()=>tab(true);
+// الموظف
+let cur=null;
+$('eGo').onclick=()=>{const c=$('code').value.trim();if(!DB.emps.find(x=>x.code===c))return msg('eMsg','الكود غير صحيح','e');cur=c;$('eLogin').classList.add('hide');$('eDash').classList.remove('hide');$('eMsg').innerHTML='';renderE()};
+$('eOut').onclick=()=>{cur=null;$('code').value='';$('eLogin').classList.remove('hide');$('eDash').classList.add('hide')};
+$('type').onchange=()=>{const h=$('type').value==='half';$('toBox').classList.toggle('hide',h);$('lFrom').textContent=h?'التاريخ':'من تاريخ'};
+function renderE(){const s=stats(cur);
+$('eName').textContent=s.e.name+' (كود '+s.e.code+')';
+$('eStats').innerHTML=[['الرصيد السنوي',s.e.bal,''],['المستخدم',s.used,''],['المتبقي',s.left,''],['عارضة',s.casual,''],['نصف يوم',s.half+' يوم ('+s.half*2+' مرة)',''],['مرضي (مستقل)',s.sick,'sick']].map(x=>'<div class="stat '+x[2]+'"><b>'+esc(x[1])+'</b><span>'+x[0]+'</span></div>').join('');
+$('eBar').style.width=Math.min(100,s.used/s.e.bal*100)+'%';
+const rs=DB.reqs.filter(r=>r.code===cur).reverse();
+$('eTbl').innerHTML='<tr><th>النوع</th><th>من</th><th>إلى</th><th>الأيام</th><th>الحالة</th><th>ملاحظات</th></tr>'+(rs.map(r=>'<tr><td>'+TYPES[r.type]+'</td><td>'+r.from+'</td><td>'+r.to+'</td><td>'+r.days+'</td><td><span class="tag '+r.status+'">'+ST[r.status]+'</span></td><td>'+esc(r.note||'-')+'</td></tr>').join('')||'<tr><td colspan="6">لا توجد طلبات</td></tr>')}
+$('send').onclick=()=>{const type=$('type').value,from=$('from').value;let to=type==='half'?from:$('to').value;
+if(!from||!to)return msg('rMsg','اختر التاريخ','e');if(to<from)return msg('rMsg','تاريخ النهاية قبل البداية','e');
+const d=type==='half'?0.5:days(from,to);if(type==='half'&&from!==to)return msg('rMsg','نصف اليوم ليوم واحد فقط','e');
+const s=stats(cur);const pend=DB.reqs.filter(r=>r.code===cur&&r.status==='pending'&&r.type!=='sick').reduce((a,r)=>a+r.days,0);
+if(type!=='sick'&&d>s.left-pend)return msg('rMsg','الرصيد المتبقي لا يكفي ('+(s.left-pend)+' يوم متاح)','e');
+if(!fdb)return msg('rMsg','قاعدة البيانات غير مربوطة','e');const rq={id:Date.now(),code:cur,type,from,to,days:d,note:$('note').value.trim(),status:'pending'};fdb.collection('reqs').doc(String(rq.id)).set(rq).catch(()=>msg('rMsg','فشل الإرسال، تأكد من الاتصال','e'));
+$('note').value='';msg('rMsg','تم إرسال الطلب ('+d+' يوم) وهو قيد المراجعة','s');renderE()};
+// الإدارة
+$('aGo').onclick=()=>{if($('pw').value!==ADMIN_PW)return msg('aMsg','كلمة المرور خاطئة','e');$('aLogin').classList.add('hide');$('aDash').classList.remove('hide');renderA()};
+$('aOut').onclick=()=>{$('pw').value='';$('aLogin').classList.remove('hide');$('aDash').classList.add('hide')};
+function renderA(){const p=DB.reqs.filter(r=>r.status==='pending').length;
+$('aStats').innerHTML=[['موظفون',DB.emps.length],['طلبات معلقة',p],['مقبولة',DB.reqs.filter(r=>r.status==='approved').length],['مرفوضة',DB.reqs.filter(r=>r.status==='rejected').length]].map(x=>'<div class="stat"><b>'+x[1]+'</b><span>'+x[0]+'</span></div>').join('');
+$('aReq').innerHTML='<tr><th>الموظف</th><th>النوع</th><th>من</th><th>إلى</th><th>أيام</th><th>الحالة</th><th>إجراء</th></tr>'+(DB.reqs.slice().reverse().map(r=>{const e=DB.emps.find(x=>x.code===r.code);return'<tr><td>'+esc(e?e.name:r.code)+'</td><td>'+TYPES[r.type]+'</td><td>'+r.from+'</td><td>'+r.to+'</td><td>'+r.days+'</td><td><span class="tag '+r.status+'">'+ST[r.status]+'</span></td><td>'+(r.status==='pending'?'<button class="btn ok sm" data-a="approved" data-i="'+r.id+'">قبول</button> <button class="btn bad sm" data-a="rejected" data-i="'+r.id+'">رفض</button>':'<button class="btn gray sm" data-a="pending" data-i="'+r.id+'">تراجع</button>')+'</td></tr>'}).join('')||'<tr><td colspan="7">لا توجد طلبات</td></tr>');
+$('aEmp').innerHTML='<tr><th>الكود</th><th>الاسم</th><th>الرصيد</th><th>المستخدم</th><th>المتبقي</th><th>مرضي</th><th></th></tr>'+DB.emps.map(e=>{const s=stats(e.code);return'<tr><td>'+esc(e.code)+'</td><td>'+esc(e.name)+'</td><td>'+e.bal+'</td><td>'+s.used+'</td><td>'+s.left+'</td><td>'+s.sick+'</td><td><button class="btn bad sm" data-d="'+esc(e.code)+'">حذف</button></td></tr>'}).join('')}
+document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
+if(b.dataset.a){const r=DB.reqs.find(x=>String(x.id)===b.dataset.i);if(b.dataset.a==='approved'&&r.type!=='sick'){const s=stats(r.code);if(r.days>s.left){alert('رصيد الموظف لا يكفي لقبول هذا الطلب');return}}fdb.collection('reqs').doc(String(r.id)).update({status:b.dataset.a})}
+if(b.dataset.d&&confirm('حذف الموظف وكل طلباته؟')){const bt=fdb.batch();bt.delete(fdb.collection('emps').doc(b.dataset.d));DB.reqs.filter(r=>r.code===b.dataset.d).forEach(r=>bt.delete(fdb.collection('reqs').doc(String(r.id))));bt.commit()}});
+$('add').onclick=()=>{const c=$('nc').value.trim(),n=$('nn').value.trim();if(!c||!n||!/^[A-Za-z0-9_-]+$/.test(c))return msg('nMsg','أكمل البيانات (الكود أرقام أو حروف إنجليزية)','e');if(!fdb)return;if(DB.emps.find(e=>e.code===c))return msg('nMsg','الكود مستخدم','e');
+fdb.collection('emps').doc(c).set({code:c,name:n,bal:+$('nb').value});$('nc').value=$('nn').value='';msg('nMsg','تمت الإضافة','s')};
+</script>
+</body>
+</html>
