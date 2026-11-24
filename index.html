@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>نظام إجازات قسم الفحص - النساجون الشرقيون</title>
+<title>إجازاتي</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#090c12"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--text:#1b2a3a;--muted:#6b7a8c;--pri:#1d4e89;--pri2:#2e7bd6;--ok:#1e8e5a;--bad:#c0392b;--warn:#d98e04;--line:#dde4ee;--head:linear-gradient(135deg,#1d4e89,#2e7bd6)}
 :root[data-theme=dark]{--bg:#0f1620;--card:#18222f;--text:#e6edf5;--muted:#8fa0b3;--pri:#4da3ff;--pri2:#2e7bd6;--line:#2a3a4d;--head:linear-gradient(135deg,#0b2545,#13315c)}
@@ -43,34 +43,39 @@ th{color:var(--muted);font-weight:600}
 .hide{display:none}
 .bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--pri2)}
 </style>
+<link rel="stylesheet" href="modern.css">
+<link rel="stylesheet" href="night.css">
+<link rel="stylesheet" href="minimal.css">
+<link rel="stylesheet" href="welcome.css">
+<link rel="stylesheet" href="features.css">
 </head>
 <body>
-<header>
-<svg width="52" height="52" viewBox="0 0 52 52" aria-label="شعار"><circle cx="26" cy="26" r="25" fill="#fff"/><path d="M10 18h32M10 26h32M10 34h32M18 10v32M26 10v32M34 10v32" stroke="#1d4e89" stroke-width="3" stroke-linecap="round"/><circle cx="26" cy="26" r="6" fill="#c98a0b"/></svg>
-<h1>شركة النساجون الشرقيون - انترناشيونال | قسم الفحص<small>نظام إدارة إجازات العمال</small></h1>
-<div class="themes"><select id="theme" aria-label="التصميم"><option value="light">🎨 فاتح</option><option value="dark">🌙 داكن</option><option value="green">🌿 أخضر</option><option value="gold">✨ ذهبي</option></select></div>
-</header>
-<main>
+
+<section id="welcome" class="welcome-gate" aria-label="الترحيب"><div class="welcome-orbit" aria-hidden="true"></div><div class="welcome-content"><img class="welcome-logo" src="ow-logo.svg" alt="شعار النساجون الشرقيون"><div class="welcome-line"></div><p class="welcome-kicker">أهلًا بكم</p><h1>النساجون الشرقيون<br><span>ترحب بكم</span></h1><p class="welcome-sub">كل ما يخص إجازتك، في مكان واحد.</p><button id="enterGate" class="btn">الدخول إلى البوابة <span aria-hidden="true">←</span></button><button id="installApp" class="btn gray hide">تثبيت على الهاتف</button><small>بوابة الموظفين والإدارة</small><p id="offlineHint" class="hide" role="status">أنت غير متصل. تحتاج اتصالًا بالإنترنت للدخول ومتابعة الإجازات.</p></div><div class="welcome-footer">ORIENTAL WEAVERS</div></section>
+<main id="appMain" class="hide">
 <div class="tabs"><button id="tE" class="on">بوابة الموظف</button><button id="tA">لوحة الإدارة</button></div>
 
 <section id="emp">
-<div id="eLogin" class="card"><h2>دخول الموظف</h2><label>الكود الشخصي</label><input id="code" inputmode="numeric" placeholder="مثال: 101"><button class="btn" id="eGo">دخول</button><div id="eMsg"></div></div>
+<div id="eLogin" class="card login-layout"><div class="login-story"><div class="story-icon" aria-hidden="true">◷</div><h2></h2><p>قدّم طلب إجازتك وتابع حالته، واعرف رصيدك المتبقي من غير خطوات كتير.</p></div><div class="login-form"><h2>إجازاتك. ببساطة.</h2><p>اكتب كودك الوظيفي للدخول إلى صفحتك.</p><label for="employeeCode">كود الموظف</label><input id="employeeCode" type="text" inputmode="numeric" placeholder="اكتب الكود هنا" autocomplete="off" dir="ltr"><button class="btn" id="eGo">دخول ←</button><p class="small-note">الدخول بالكود فقط. حافظ على كودك، أي شخص يعرفه يقدر يدخل به.</p><div id="eMsg" role="alert"></div></div></div>
 <div id="eDash" class="hide">
 <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="eName"></h2><button class="btn sm gray" id="eOut">خروج</button></div>
 <div class="grid" id="eStats"></div><div class="bar"><i id="eBar"></i></div></div>
-<div class="card"><h2>طلب إجازة جديد</h2>
+<div id="employeeAlerts" class="card notification-card" aria-live="polite"></div>
+<div class="dashboard-columns"><div class="card"><div class="eyebrow">خطوة جديدة</div><h2>طلب إجازة جديد</h2>
 <label>نوع الإجازة</label><select id="type"><option value="annual">سنوية</option><option value="casual">عارضة (تخصم من السنوي)</option><option value="half">نصف يوم (0.5 من السنوي)</option><option value="sick">مرضية (لا تخصم من السنوي)</option></select>
 <div class="row2"><div><label id="lFrom">من تاريخ</label><input type="date" id="from"></div><div id="toBox"><label>إلى تاريخ</label><input type="date" id="to"></div></div>
 <label>ملاحظات</label><textarea id="note" rows="2"></textarea><button class="btn" id="send">إرسال الطلب</button><div id="rMsg"></div></div>
-<div class="card"><h2>سجل إجازاتي</h2><div class="wrap"><table id="eTbl"></table></div></div>
+<div class="card"><div class="eyebrow">متابعة الطلبات</div><h2>سجل إجازاتي</h2><div class="wrap"><table id="eTbl"></table></div></div></div>
 </div>
 </section>
 
 <section id="adm" class="hide">
-<div id="aLogin" class="card"><h2>دخول الإدارة</h2><label>كلمة المرور</label><input type="password" id="pw"><button class="btn" id="aGo">دخول</button><div id="aMsg"></div></div>
-<div id="aDash" class="hide">
+<div id="aLogin" class="card" style="max-width:480px;margin:auto"><h2>دخول المسؤول</h2><label>البريد الإلكتروني</label><input id="adminEmail" type="email" autocomplete="username" dir="ltr"><label>كلمة مرور التطبيق</label><input id="adminPassword" type="password" autocomplete="current-password"><button class="btn" id="aGo">دخول المسؤول</button><div id="aMsg" role="alert"></div></div>
+<div id="aDash" class="hide"><div class="page-intro"><div><h2>إدارة الفريق</h2><p>راجع الطلبات وتابع أرصدة الموظفين.</p></div></div>
 <div class="card"><div class="grid" id="aStats"></div></div>
-<div class="card"><h2>الطلبات</h2><div class="wrap"><table id="aReq"></table></div></div>
+<div id="pendingReminder" class="reminder-card" aria-live="polite"></div>
+<div class="card"><div class="section-tools"><h2>الطلبات</h2><label class="filter-label"><input id="pendingOnly" type="checkbox"> المعلقة فقط</label></div><div class="wrap"><table id="aReq"></table></div></div>
+<div class="card report-card" id="monthlyReport"><div class="section-tools"><div><div class="eyebrow">نظرة شهرية</div><h2>تقرير الإجازات</h2></div><button class="btn gray sm" id="printReport">طباعة / حفظ PDF</button></div><div class="report-controls"><div><label for="reportMonth">الشهر</label><input id="reportMonth" type="month" value="2026-11"></div><p>يعرض الطلبات التي تتقاطع مع الشهر المحدد، والأيام الواقعة داخله فقط.</p></div><div class="grid" id="reportStats"></div><div class="wrap"><table id="reportTable"></table></div><p class="report-foot">المرضية مستقلة ولا تخصم من السنوي. التقرير يعكس حالة الطلبات الحالية.</p></div>
 <div class="card"><h2>الموظفون وأرصدتهم</h2><div class="wrap"><table id="aEmp"></table></div>
 <h2 style="margin-top:14px">إضافة موظف</h2><div class="row2"><div><label>الكود</label><input id="nc"></div><div><label>الاسم</label><input id="nn"></div></div>
 <label>الرصيد السنوي</label><select id="nb"><option value="28">28 يوم</option><option value="37">37 يوم</option></select><button class="btn" id="add">إضافة</button><div id="nMsg"></div>
@@ -78,67 +83,109 @@ th{color:var(--muted);font-weight:600}
 </div>
 </section>
 </main>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.4.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+$('enterGate').onclick=()=>{$('welcome').classList.add('hide');$('appMain').classList.remove('hide');$('employeeCode').focus()};
 const TYPES={annual:'سنوية',casual:'عارضة',half:'نصف يوم',sick:'مرضية'};
 const ST={pending:'قيد الانتظار',approved:'مقبول',rejected:'مرفوض'};
 // ====== ضع بيانات مشروع Firebase هنا ======
-const firebaseConfig={apiKey:"AIzaSyAsXSXrx08zmhj0WMm7E6lH0o0hvomCJjY",authDomain:"oriental-weavers-a0801.firebaseapp.com",projectId:"oriental-weavers-a0801",storageBucket:"oriental-weavers-a0801.firebasestorage.app",messagingSenderId:"854054403216",appId:"1:854054403216:web:233c21f340893d0218ec15"};
+const firebaseConfig=window.FAHS_CONFIG;
 // ==========================================
-const ADMIN_PW='19122001';
-let DB={emps:[],reqs:[]},fdb=null;
-if(firebaseConfig.apiKey.startsWith('ضع'))document.querySelector('main').insertAdjacentHTML('afterbegin','<div class="msg e">لم يتم ربط قاعدة البيانات بعد (راجع بيانات Firebase في أعلى الكود)</div>');
-else try{firebase.initializeApp(firebaseConfig);fdb=firebase.firestore();
-fdb.collection('emps').onSnapshot(q=>{DB.emps=q.docs.map(d=>d.data());refresh()},()=>alert('تعذر الاتصال بقاعدة البيانات'));
-fdb.collection('reqs').onSnapshot(q=>{DB.reqs=q.docs.map(d=>d.data()).sort((a,b)=>a.id-b.id);refresh()})}catch(e){}
-function refresh(){if(cur&&!$('eDash').classList.contains('hide')){if(!DB.emps.find(x=>x.code===cur)){$('eOut').click();return}renderE()}if(!$('aDash').classList.contains('hide'))renderA()}
+
+let DB={emps:[],reqs:[]},fdb=null,auth=null,cur=null,isAdmin=false,stops=[];
+function clearSession(){stops.forEach(f=>f());stops=[];DB={emps:[],reqs:[]};cur=null;isAdmin=false;
+ $('eDash').classList.add('hide');$('aDash').classList.add('hide');$('eLogin').classList.remove('hide');$('aLogin').classList.remove('hide');
+ ['eStats','eTbl','aStats','aReq','aEmp','employeeAlerts','pendingReminder','reportStats','reportTable'].forEach(id=>$(id).textContent='');}
+function snapshotError(){msg('eMsg',firebaseConfig?'تعذر تحميل البيانات. تحقق من صلاحيات الحساب واتصل بالمسؤول.':'نسخة مراجعة غير متصلة بأي قاعدة بيانات. يلزم إعداد مشروع اختبار أولاً.','e');}
+try{if(!firebaseConfig)throw new Error('Review build: configure a test project first');firebase.initializeApp(firebaseConfig);fdb=firebase.firestore();auth=firebase.auth();
+ auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(snapshotError);
+ async function loadSession(user){clearSession();if(!user)return;
+  try{const {claims}=await user.getIdTokenResult();if(auth.currentUser!==user)return;
+   isAdmin=user.uid==='E9t3E4lqzCVfNrP6FooifCxNRUa2'&&!user.isAnonymous;cur=null;if(user.isAnonymous){const session=await fdb.collection('sessions').doc(user.uid).get();if(auth.currentUser!==user)return;cur=session.exists?session.data().code:null;}
+   if(!isAdmin&&!cur){msg('eMsg','الحساب غير مرتبط بموظف. راجع المسؤول.','e');return;}
+   $('eLogin').classList.add('hide');
+   if(isAdmin){$('aLogin').classList.add('hide');$('aDash').classList.remove('hide');tab(true);
+    stops.push(fdb.collection('emps').onSnapshot(q=>{DB.emps=q.docs.map(d=>d.data());refresh()},snapshotError));
+    stops.push(fdb.collection('reqs').onSnapshot(q=>{DB.reqs=q.docs.map(d=>({...d.data(),docId:d.id})).sort((a,b)=>a.id-b.id);refresh()},snapshotError));
+   }else{$('eDash').classList.remove('hide');tab(false);
+    stops.push(fdb.collection('emps').doc(cur).onSnapshot(d=>{DB.emps=d.exists?[d.data()]:[];refresh()},snapshotError));
+    stops.push(fdb.collection('reqs').where('code','==',cur).onSnapshot(q=>{DB.reqs=q.docs.map(d=>({...d.data(),docId:d.id})).sort((a,b)=>a.id-b.id);refresh()},snapshotError));
+   }
+  }catch(e){clearSession();snapshotError();}
+ }
+ auth.onIdTokenChanged(loadSession);
+ window.loadSession=loadSession;
+}catch(e){snapshotError();}
+function labelTables(){document.querySelectorAll('table').forEach(t=>{const heads=Array.from(t.querySelectorAll('th'),h=>h.textContent);t.querySelectorAll('tr').forEach(r=>r.querySelectorAll('td').forEach((d,i)=>{if(!d.hasAttribute('colspan'))d.dataset.label=heads[i]||'إجراء'}));});}
+function refresh(){if(cur&&!$('eDash').classList.contains('hide')){if(!DB.emps.find(x=>x.code===cur))return;renderE()}if(!$('aDash').classList.contains('hide'))renderA();labelTables()}
 // الحسابات: الخصم يُحسب دائماً من الطلبات المقبولة فقط
 function stats(code){const e=DB.emps.find(x=>x.code===code);const ok=DB.reqs.filter(r=>r.code===code&&r.status==='approved');
 const sum=t=>ok.filter(r=>r.type===t).reduce((a,r)=>a+r.days,0);
 const annual=sum('annual'),casual=sum('casual'),half=sum('half'),sick=sum('sick');
 const used=annual+casual+half;return{e,annual,casual,half,sick,used,left:e.bal-used}}
-function days(a,b){return Math.round((new Date(b)-new Date(a))/864e5)+1}
+function expectedDays(r){const n=days(r.from,r.to);return r.type==='half'?(r.from===r.to&&n===1?0.5:NaN):n}
+function days(a,b){const x=new Date(a),y=new Date(b);if(!Number.isFinite(+x)||!Number.isFinite(+y)||x.toISOString().slice(0,10)!==a||y.toISOString().slice(0,10)!==b)return NaN;return Math.round((y-x)/864e5)+1}
 function msg(id,t,c){$(id).innerHTML='<div class="msg '+c+'">'+esc(t)+'</div>'}
 // الثيم
 const th=(()=>{try{return localStorage.getItem('nasajoon_theme')}catch(e){return null}})()||'light';
-$('theme').value=th;document.documentElement.dataset.theme=th;
-$('theme').onchange=e=>{document.documentElement.dataset.theme=e.target.value;try{localStorage.setItem('nasajoon_theme',e.target.value)}catch(x){}};
+document.documentElement.dataset.theme='dark';
 // تبويبات
 function tab(a){$('emp').classList.toggle('hide',a);$('adm').classList.toggle('hide',!a);$('tE').classList.toggle('on',!a);$('tA').classList.toggle('on',a)}
 $('tE').onclick=()=>tab(false);$('tA').onclick=()=>tab(true);
 // الموظف
-let cur=null;
-$('eGo').onclick=()=>{const c=$('code').value.trim();if(!DB.emps.find(x=>x.code===c))return msg('eMsg','الكود غير صحيح','e');cur=c;$('eLogin').classList.add('hide');$('eDash').classList.remove('hide');$('eMsg').innerHTML='';renderE()};
-$('eOut').onclick=()=>{cur=null;$('code').value='';$('eLogin').classList.remove('hide');$('eDash').classList.add('hide')};
+
+async function signOut(){if(auth.currentUser&&auth.currentUser.isAnonymous){try{await fdb.collection('sessions').doc(auth.currentUser.uid).delete();}catch(e){}}await auth.signOut();}
+$('eGo').onclick=async()=>{const code=$('employeeCode').value.trim().replace(/[٠-٩]/g,c=>String(c.charCodeAt(0)-1632)).replace(/[۰-۹]/g,c=>String(c.charCodeAt(0)-1776));if(!/^[A-Za-z0-9_-]+$/.test(code))return msg('eMsg','أدخل كودًا صحيحًا','e');$('eGo').disabled=true;try{await signOut();const {user}=await auth.signInAnonymously();await fdb.collection('sessions').doc(user.uid).set({code});await window.loadSession(user);}catch(e){await auth.signOut();msg('eMsg','تعذر الدخول بهذا الكود. راجع المسؤول.','e');}finally{$('eGo').disabled=false;}};
+$('aGo').onclick=async()=>{try{await signOut();await auth.signInWithEmailAndPassword($('adminEmail').value.trim(),$('adminPassword').value);$('adminPassword').value='';}catch(e){msg('aMsg','تعذر دخول المسؤول. تحقق من بيانات الحساب.','e');}};
+$('eOut').onclick=signOut;
 $('type').onchange=()=>{const h=$('type').value==='half';$('toBox').classList.toggle('hide',h);$('lFrom').textContent=h?'التاريخ':'من تاريخ'};
 function renderE(){const s=stats(cur);
 $('eName').textContent=s.e.name+' (كود '+s.e.code+')';
-$('eStats').innerHTML=[['الرصيد السنوي',s.e.bal,''],['المستخدم',s.used,''],['المتبقي',s.left,''],['عارضة',s.casual,''],['نصف يوم',s.half+' يوم ('+s.half*2+' مرة)',''],['مرضي (مستقل)',s.sick,'sick']].map(x=>'<div class="stat '+x[2]+'"><b>'+esc(x[1])+'</b><span>'+x[0]+'</span></div>').join('');
+$('eStats').innerHTML=[['الرصيد السنوي',s.e.bal,''],['المستخدم',s.used,''],['المتبقي',s.left,''],['عارضة',s.casual,''],['نصف يوم',s.half+' يوم / '+s.half*2+' مرة',''],['مرضي (مستقل)',s.sick,'sick']].map(x=>'<div class="stat '+x[2]+'"><b>'+esc(x[1])+'</b><span>'+x[0]+'</span></div>').join('');
 $('eBar').style.width=Math.min(100,s.used/s.e.bal*100)+'%';
+renderEmployeeAlerts();
 const rs=DB.reqs.filter(r=>r.code===cur).reverse();
-$('eTbl').innerHTML='<tr><th>النوع</th><th>من</th><th>إلى</th><th>الأيام</th><th>الحالة</th><th>ملاحظات</th></tr>'+(rs.map(r=>'<tr><td>'+TYPES[r.type]+'</td><td>'+r.from+'</td><td>'+r.to+'</td><td>'+r.days+'</td><td><span class="tag '+r.status+'">'+ST[r.status]+'</span></td><td>'+esc(r.note||'-')+'</td></tr>').join('')||'<tr><td colspan="6">لا توجد طلبات</td></tr>')}
-$('send').onclick=()=>{const type=$('type').value,from=$('from').value;let to=type==='half'?from:$('to').value;
+$('eTbl').innerHTML='<tr><th>النوع</th><th>من</th><th>إلى</th><th>الأيام</th><th>الحالة</th><th>ملاحظات</th></tr>'+(rs.map(r=>'<tr><td>'+esc(TYPES[r.type]||r.type)+'</td><td>'+esc(r.from)+'</td><td>'+esc(r.to)+'</td><td>'+esc(r.days)+'</td><td><span class="tag '+esc(r.status)+'">'+esc(ST[r.status]||r.status)+'</span></td><td>'+esc(r.note||'-')+'</td></tr>').join('')||'<tr><td colspan="6">لا توجد طلبات</td></tr>')}
+$('send').onclick=()=>{if(!auth.currentUser||!cur||isAdmin)return;const type=$('type').value,from=$('from').value;let to=type==='half'?from:$('to').value;
 if(!from||!to)return msg('rMsg','اختر التاريخ','e');if(to<from)return msg('rMsg','تاريخ النهاية قبل البداية','e');
-const d=type==='half'?0.5:days(from,to);if(type==='half'&&from!==to)return msg('rMsg','نصف اليوم ليوم واحد فقط','e');
+const d=type==='half'?0.5:days(from,to);if(!Number.isFinite(d)||d<=0||d>366)return msg('rMsg','اختر فترة صحيحة لا تتجاوز 366 يومًا','e');if(type==='half'&&from!==to)return msg('rMsg','نصف اليوم ليوم واحد فقط','e');
 const s=stats(cur);const pend=DB.reqs.filter(r=>r.code===cur&&r.status==='pending'&&r.type!=='sick').reduce((a,r)=>a+r.days,0);
 if(type!=='sick'&&d>s.left-pend)return msg('rMsg','الرصيد المتبقي لا يكفي ('+(s.left-pend)+' يوم متاح)','e');
-if(!fdb)return msg('rMsg','قاعدة البيانات غير مربوطة','e');const rq={id:Date.now(),code:cur,type,from,to,days:d,note:$('note').value.trim(),status:'pending'};fdb.collection('reqs').doc(String(rq.id)).set(rq).catch(()=>msg('rMsg','فشل الإرسال، تأكد من الاتصال','e'));
-$('note').value='';msg('rMsg','تم إرسال الطلب ('+d+' يوم) وهو قيد المراجعة','s');renderE()};
+if(!fdb)return msg('rMsg','قاعدة البيانات غير مربوطة','e');const rq={id:Date.now(),code:cur,type,from,to,days:d,note:$('note').value.trim(),status:'pending'};fdb.collection('reqs').doc(String(rq.id)).set(rq).then(()=>msg('rMsg','تم إرسال الطلب وهو قيد المراجعة','s')).catch(()=>msg('rMsg','فشل الإرسال، تأكد من الاتصال','e'));
+$('note').value='';msg('rMsg','انتظر اكتمال الحفظ قبل إغلاق الصفحة.','s');renderE();labelTables()};
 // الإدارة
-$('aGo').onclick=()=>{if($('pw').value!==ADMIN_PW)return msg('aMsg','كلمة المرور خاطئة','e');$('aLogin').classList.add('hide');$('aDash').classList.remove('hide');renderA()};
-$('aOut').onclick=()=>{$('pw').value='';$('aLogin').classList.remove('hide');$('aDash').classList.add('hide')};
-function renderA(){const p=DB.reqs.filter(r=>r.status==='pending').length;
+$('aOut').onclick=signOut;
+function renderA(){const p=DB.reqs.filter(r=>r.status==='pending').length;renderReminder(p);renderReport();
 $('aStats').innerHTML=[['موظفون',DB.emps.length],['طلبات معلقة',p],['مقبولة',DB.reqs.filter(r=>r.status==='approved').length],['مرفوضة',DB.reqs.filter(r=>r.status==='rejected').length]].map(x=>'<div class="stat"><b>'+x[1]+'</b><span>'+x[0]+'</span></div>').join('');
-$('aReq').innerHTML='<tr><th>الموظف</th><th>النوع</th><th>من</th><th>إلى</th><th>أيام</th><th>الحالة</th><th>إجراء</th></tr>'+(DB.reqs.slice().reverse().map(r=>{const e=DB.emps.find(x=>x.code===r.code);return'<tr><td>'+esc(e?e.name:r.code)+'</td><td>'+TYPES[r.type]+'</td><td>'+r.from+'</td><td>'+r.to+'</td><td>'+r.days+'</td><td><span class="tag '+r.status+'">'+ST[r.status]+'</span></td><td>'+(r.status==='pending'?'<button class="btn ok sm" data-a="approved" data-i="'+r.id+'">قبول</button> <button class="btn bad sm" data-a="rejected" data-i="'+r.id+'">رفض</button>':'<button class="btn gray sm" data-a="pending" data-i="'+r.id+'">تراجع</button>')+'</td></tr>'}).join('')||'<tr><td colspan="7">لا توجد طلبات</td></tr>');
-$('aEmp').innerHTML='<tr><th>الكود</th><th>الاسم</th><th>الرصيد</th><th>المستخدم</th><th>المتبقي</th><th>مرضي</th><th></th></tr>'+DB.emps.map(e=>{const s=stats(e.code);return'<tr><td>'+esc(e.code)+'</td><td>'+esc(e.name)+'</td><td>'+e.bal+'</td><td>'+s.used+'</td><td>'+s.left+'</td><td>'+s.sick+'</td><td><button class="btn bad sm" data-d="'+esc(e.code)+'">حذف</button></td></tr>'}).join('')}
-document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
-if(b.dataset.a){const r=DB.reqs.find(x=>String(x.id)===b.dataset.i);if(b.dataset.a==='approved'&&r.type!=='sick'){const s=stats(r.code);if(r.days>s.left){alert('رصيد الموظف لا يكفي لقبول هذا الطلب');return}}fdb.collection('reqs').doc(String(r.id)).update({status:b.dataset.a})}
-if(b.dataset.d&&confirm('حذف الموظف وكل طلباته؟')){const bt=fdb.batch();bt.delete(fdb.collection('emps').doc(b.dataset.d));DB.reqs.filter(r=>r.code===b.dataset.d).forEach(r=>bt.delete(fdb.collection('reqs').doc(String(r.id))));bt.commit()}});
-$('add').onclick=()=>{const c=$('nc').value.trim(),n=$('nn').value.trim();if(!c||!n||!/^[A-Za-z0-9_-]+$/.test(c))return msg('nMsg','أكمل البيانات (الكود أرقام أو حروف إنجليزية)','e');if(!fdb)return;if(DB.emps.find(e=>e.code===c))return msg('nMsg','الكود مستخدم','e');
-fdb.collection('emps').doc(c).set({code:c,name:n,bal:+$('nb').value});$('nc').value=$('nn').value='';msg('nMsg','تمت الإضافة','s')};
+$('aReq').innerHTML='<tr><th>الموظف</th><th>النوع</th><th>من</th><th>إلى</th><th>أيام</th><th>الحالة</th><th>إجراء</th></tr>'+(DB.reqs.filter(r=>!$('pendingOnly').checked||r.status==='pending').slice().reverse().map(r=>{const e=DB.emps.find(x=>x.code===r.code);return'<tr><td>'+esc(e?e.name:r.code)+'</td><td>'+esc(TYPES[r.type]||r.type)+'</td><td>'+esc(r.from)+'</td><td>'+esc(r.to)+'</td><td>'+esc(r.days)+'</td><td><span class="tag '+esc(r.status)+'">'+esc(ST[r.status]||r.status)+'</span></td><td>'+(r.status==='pending'?'<button class="btn ok sm" data-a="approved" data-i="'+esc(r.id)+'">قبول</button> <button class="btn bad sm" data-a="rejected" data-i="'+esc(r.id)+'">رفض</button>':'<button class="btn gray sm" data-a="pending" data-i="'+esc(r.id)+'">تراجع</button>')+'</td></tr>'}).join('')||'<tr><td colspan="7">لا توجد طلبات</td></tr>');
+$('aEmp').innerHTML='<tr><th>الكود</th><th>الاسم</th><th>الرصيد</th><th>المستخدم</th><th>المتبقي</th><th>مرضي</th><th></th></tr>'+DB.emps.map(e=>{const s=stats(e.code);return'<tr><td>'+esc(e.code)+'</td><td>'+esc(e.name)+'</td><td>'+esc(e.bal)+'</td><td>'+s.used+'</td><td>'+s.left+'</td><td>'+s.sick+'</td><td><button class="btn bad sm" data-d="'+esc(e.code)+'">حذف</button></td></tr>'}).join('')}
+document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b||!isAdmin)return;
+if(b.dataset.a){const r=DB.reqs.find(x=>String(x.id)===b.dataset.i);if(!r)return;if(!Number.isFinite(expectedDays(r))||expectedDays(r)<=0||expectedDays(r)>366){alert('تواريخ الطلب غير صالحة');return;}if(b.dataset.a==='approved'&&r.type!=='sick'){if(!DB.emps.some(e=>e.code===r.code)){alert('الموظف غير موجود');return;}const s=stats(r.code);if(expectedDays(r)>s.left){alert('رصيد الموظف لا يكفي لقبول هذا الطلب');return}}fdb.collection('reqs').doc(r.docId||String(r.id)).update({status:b.dataset.a,days:expectedDays(r)}).catch(()=>alert('لم يتم حفظ القرار. تحقق من الاتصال والصلاحيات.'))}
+if(b.dataset.d&&confirm('حذف الموظف وكل طلباته؟')){const bt=fdb.batch();bt.delete(fdb.collection('emps').doc(b.dataset.d));DB.reqs.filter(r=>r.code===b.dataset.d).forEach(r=>bt.delete(fdb.collection('reqs').doc(r.docId||String(r.id))));bt.commit().catch(()=>alert('لم يتم الحذف. تحقق من الاتصال والصلاحيات.'))}});
+$('add').onclick=()=>{if(!isAdmin)return;const c=$('nc').value.trim(),n=$('nn').value.trim();if(!c||!n||!/^[A-Za-z0-9_-]+$/.test(c))return msg('nMsg','أكمل البيانات (الكود أرقام أو حروف إنجليزية)','e');if(!fdb)return;if(DB.emps.find(e=>e.code===c))return msg('nMsg','الكود مستخدم','e');
+fdb.collection('emps').doc(c).set({code:c,name:n,bal:+$('nb').value}).then(()=>{$('nc').value=$('nn').value='';msg('nMsg','تمت إضافة الموظف. يمكنه الدخول بكوده الوظيفي.','s')}).catch(()=>msg('nMsg','لم تتم الإضافة','e'))};
+
+// Review features: in-portal alerts only. No external messaging or background push.
+function renderEmployeeAlerts(){
+ const decided=DB.reqs.filter(r=>r.code===cur&&['approved','rejected'].includes(r.status)).slice().reverse().slice(0,4);
+ $('employeeAlerts').innerHTML='<div class="section-tools"><h2>إشعاراتك</h2><span class="portal-pill">داخل البوابة</span></div><p class="feature-note">تتحدث حالة طلباتك مباشرة أثناء فتح الصفحة.</p>'+(decided.map(r=>'<div class="decision '+r.status+'"><span class="decision-icon">'+(r.status==='approved'?'✓':'×')+'</span><div><strong>'+(r.status==='approved'?'تم قبول طلب إجازتك':'تم رفض طلب إجازتك')+'</strong><p>'+esc(TYPES[r.type])+' · '+esc(r.from)+' ← '+esc(r.to)+'</p></div><span class="decision-days">'+esc(r.days)+' يوم</span></div>').join('')||'<p class="empty-note">لا توجد قرارات على طلباتك حتى الآن.</p>');
+}
+function renderReminder(count){$('pendingReminder').innerHTML='<div class="reminder-icon">◷</div><div><strong>'+(count?'عندك '+count+' طلب إجازة مستني قرارك':'كل الطلبات تمت مراجعتها')+'</strong><p>'+(count?'راجع الطلبات المعلقة عشان الموظفين يعرفوا يرتبوا إجازاتهم.':'أي طلب جديد هيظهر هنا أثناء فتح لوحة الإدارة.')+'</p><small>تذكير داخل لوحة الإدارة، وليس إشعارًا خارج التطبيق.</small></div>'+(count?'<button class="btn sm" id="reviewPending">مراجعة الطلبات ↓</button>':'');const b=$('reviewPending');if(b)b.onclick=()=>{$('pendingOnly').checked=true;renderA();labelTables();$('aReq').scrollIntoView({behavior:'smooth',block:'start'})};}
+function monthlyRows(){const month=$('reportMonth').value;if(!/^\d{4}-\d{2}$/.test(month))return[];const [y,m]=month.split('-').map(Number);const end=new Date(Date.UTC(y,m,0)).toISOString().slice(0,10);const start=month+'-01';return DB.reqs.filter(r=>r.from<=end&&r.to>=start).map(r=>({...r,monthDays:r.type==='half'?0.5:days(r.from<start?start:r.from,r.to>end?end:r.to)}));}
+function renderReport(){const rows=monthlyRows(),approved=rows.filter(r=>r.status==='approved');const annual=approved.filter(r=>r.type!=='sick').reduce((a,r)=>a+r.monthDays,0),sick=approved.filter(r=>r.type==='sick').reduce((a,r)=>a+r.monthDays,0);$('reportStats').innerHTML=[['إجمالي الطلبات',rows.length],['مقبولة',approved.length],['أيام من السنوي',annual],['أيام مرضية',sick]].map(([l,v])=>'<div class="stat"><b>'+v+'</b><span>'+l+'</span></div>').join('');$('reportTable').innerHTML='<tr><th>الموظف</th><th>النوع</th><th>الفترة</th><th>أيام الشهر</th><th>الحالة</th></tr>'+(rows.map(r=>'<tr><td>'+esc(DB.emps.find(e=>e.code===r.code)?.name||r.code)+'</td><td>'+esc(TYPES[r.type])+'</td><td>'+esc(r.from)+' ← '+esc(r.to)+'</td><td>'+r.monthDays+'</td><td><span class="tag '+esc(r.status)+'">'+esc(ST[r.status])+'</span></td></tr>').join('')||'<tr><td colspan="5">لا توجد طلبات في هذا الشهر</td></tr>');}
+$('pendingOnly').onchange=()=>{renderA();labelTables()};
+$('reportMonth').value=new Date().toLocaleDateString('sv-SE',{timeZone:'Africa/Cairo'}).slice(0,7);
+$('reportMonth').onchange=()=>{renderReport();labelTables()};
+$('printReport').onclick=()=>window.print();
 </script>
-</body>
+<script>
+let installPrompt;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('installApp').classList.remove('hide')});$('installApp').onclick=async()=>{if(installPrompt){await installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('installApp').classList.add('hide')}};window.addEventListener('appinstalled',()=>{$('installApp').classList.add('hide')});
+function onlineState(){$('offlineHint').classList.toggle('hide',navigator.onLine);$('enterGate').disabled=!navigator.onLine}window.addEventListener('online',onlineState);window.addEventListener('offline',onlineState);onlineState();
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script></body>
 </html>

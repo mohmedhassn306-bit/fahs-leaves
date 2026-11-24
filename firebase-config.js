@@ -1,0 +1,1 @@
+window.FAHS_CONFIG={apiKey:"AIzaSyAsXSXrx08zmhj0WMm7E6lH0o0hvomCJjY",authDomain:"oriental-weavers-a0801.firebaseapp.com",projectId:"oriental-weavers-a0801",storageBucket:"oriental-weavers-a0801.firebasestorage.app",messagingSenderId:"854054403216",appId:"1:854054403216:web:233c21f340893d0218ec15"};
